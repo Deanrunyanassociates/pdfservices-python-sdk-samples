@@ -7,6 +7,7 @@
 # the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
+import json # kp
 
 import logging
 import os.path
@@ -27,11 +28,31 @@ try:
     # get base path.
     base_path = str(Path(__file__).parents[2])
 
-    # Initial setup, create credentials instance.
-    credentials = Credentials.service_principal_credentials_builder(). \
-        with_client_id(os.getenv('PDF_SERVICES_CLIENT_ID')). \
-        with_client_secret(os.getenv('PDF_SERVICES_CLIENT_SECRET')). \
-        build()
+    # Initial setup, create credentials instance. kp
+    """
+    Read JSON
+    """
+
+    # Opening JSON file
+    f = open(base_path+'/'+'pdfservices-api-credentials.json') #kp
+
+    # returns JSON object as
+    # a dictionary
+    data = json.load(f)
+
+    # Get client ID and credentials
+    CLIENT_ID = data["client_credentials"]["client_id"]
+    CLIENT_SECRET = data["client_credentials"]["client_secret"]
+
+    print(CLIENT_ID)
+    print(CLIENT_SECRET)
+
+    # Closing file
+    f.close()
+
+    credentials = Credentials.service_principal_credentials_builder().with_client_id(
+        CLIENT_ID).with_client_secret(
+        CLIENT_SECRET).build()
 
     # Create an ExecutionContext using credentials and create a new operation instance.
     execution_context = ExecutionContext.create(credentials)
